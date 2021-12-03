@@ -1,0 +1,31 @@
+apiVersion: pkg.crossplane.io/v1alpha1
+kind: ControllerConfig
+metadata:
+  name: aws-config
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+    eks.amazonaws.com/role-arn: arn:aws:iam::{{ toYaml .Values.accountId }}:role/{{ .Values.environment }}_cluster_crossplane_eks_sa
+spec:
+  podSecurityContext:
+    fsGroup: 2000
+---
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: provider-aws
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+spec:
+  package: crossplane/provider-aws:alpha
+  controllerConfigRef:
+    name: aws-config
+---
+apiVersion: aws.crossplane.io/v1beta1
+kind: ProviderConfig
+metadata:
+  name: provider-aws
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+spec:
+  credentials:
+    source: InjectedIdentity
