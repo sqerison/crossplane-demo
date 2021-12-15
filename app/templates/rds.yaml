@@ -10,6 +10,8 @@ spec:
     description: {{ $.Values.environment }} {{ $.Values.apiName }}-{{ .name }} {{ default "postgres" .engine }} Server Subnet Group
     subnetIds:
       - subnet-d0d3609a
+      - subnet-f0118788
+      - subnet-2bc2a376
   writeConnectionSecretToRef:
     namespace: {{ $.Release.Namespace }}
     name: {{ $.Values.environment }}-{{ $.Values.apiName }}-subnetgroup-{{ .name }}
