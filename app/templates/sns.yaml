@@ -1,0 +1,63 @@
+{{- range .Values.sns }}
+{{- $snsName := .name -}}
+apiVersion: notification.aws.crossplane.io/v1alpha1
+kind: SNSTopic
+metadata:
+  name: {{ $.Values.environment }}-{{ $.Values.apiName }}-{{ .name }}
+spec:
+  deletionPolicy: {{ default "Delete" .deletionPolicy }}
+  forProvider:
+    region: {{ $.Values.region }}
+    name: {{ $.Values.environment }}-{{ $.Values.apiName }}-{{ .name }}
+    tags:
+      - key: env
+        value: {{ $.Values.environment }}
+      - key: api
+        value: {{ $.Values.apiName }}
+      - key: "Managed by"
+        value: crossplane
+    displayName: {{ $.Values.environment }}-{{ $.Values.apiName }}-{{ .name }}
+    {{- if .forProvider }}
+    {{- toYaml .forProvider | nindent 4 }}
+    {{- end }}
+  writeConnectionSecretToRef:
+    namespace: {{ $.Release.Namespace }}
+    name: {{ $.Values.environment }}-{{ $.Values.apiName }}-sqs-{{ .name }}
+  providerRef:
+    name: {{ default "provider-aws" $.Values.providerRef }}
+  providerConfigRef:
+    name: {{ default "provider-aws" $.Values.providerConfigRef }}
+---
+{{- range .subscriptions }}
+apiVersion: notification.aws.crossplane.io/v1alpha1
+kind: SNSSubscription
+metadata:
+  name: {{ $.Values.environment }}-{{ $.Values.apiName }}-{{ $snsName }}-{{ .name }}
+spec:
+  deletionPolicy: {{ default "Delete" .deletionPolicy }}
+  forProvider:
+    region: {{ $.Values.region }}
+    protocol: {{ default "email" .protocol }}
+    ### You can see mail sent to this address at the below URL, which is open to.
+    ### The public. You'll need to confirm the subscription in order for the
+    ### notification to become ready.
+    ### https://www.mailinator.com/v4/public/inboxes.jsp?to=crossplane-test
+    ### Other available protocols:
+    ###  http        – delivery of JSON-encoded message via HTTP POST
+    ###  https       – delivery of JSON-encoded message via HTTPS POST
+    ###  email       – delivery of message via SMTP
+    ###  email-json  – delivery of JSON-encoded message via SMTP
+    ###  sms         – delivery of message via SMS
+    ###  sqs         – delivery of JSON-encoded message to an Amazon SQS queue
+    ###  application – delivery of JSON-encoded message to an EndpointArn for a mobile app and device
+    ###  lambda      – delivery of JSON-encoded message to an AWS Lambda function
+    ###  firehose    – delivery of JSON-encoded message to an Amazon Kinesis Data Firehose delivery stream.
+    endpoint:  {{ default "crossplane-test@mailinator.com" .endpoint }}
+    topicArnRef:
+      name: {{ $.Values.environment }}-{{ $.Values.apiName }}-{{ $snsName }}
+    {{- if .forProvider }}
+    {{- toYaml .forProvider | nindent 4 }}
+    {{- end }}
+---
+{{- end }}
+{{- end }}

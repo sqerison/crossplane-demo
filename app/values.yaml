@@ -1,0 +1,27 @@
+region: us-west-2
+environment: "prod"
+apiName: "demo"
+
+sqs: []
+  ### Reference: https://doc.crds.dev/github.com/crossplane/provider-aws/sqs.aws.crossplane.io/Queue/v1beta1@v0.21.0
+  # - name: foo
+  #   forProvider:
+  #     delaySeconds: 120
+  # - name: bar
+  # - name: fifo:
+#   fifoQueue: true
+
+sns: []
+  ### Reference: https://doc.crds.dev/github.com/crossplane/provider-aws/notification.aws.crossplane.io/SNSTopic/v1alpha1@v0.21.0
+  ### Reference: https://doc.crds.dev/github.com/crossplane/provider-aws/notification.aws.crossplane.io/SNSSubscription/v1alpha1@v0.21.0
+  # - name: foo
+  #   subscriptions:
+  #     - name: foo
+  #     - name: bar
+  #       endpoint: volodymyr.shynkar@gmail.com
+
+s3:
+  ### Reference: https://doc.crds.dev/github.com/crossplane/provider-aws/s3.aws.crossplane.io/Bucket/v1beta1@v0.21.0
+  # - name: cache
+  - name: foo
+  # - name: bar

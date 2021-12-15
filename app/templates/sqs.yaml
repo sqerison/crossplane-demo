@@ -1,0 +1,20 @@
+{{- range .Values.sqs }}
+apiVersion: sqs.aws.crossplane.io/v1beta1
+kind: Queue
+metadata:
+  name: {{ $.Values.environment }}-{{ $.Values.apiName }}-{{ .name }}
+spec:
+  deletionPolicy: {{ default "Delete" .deletionPolicy }}
+  {{- if .fifoQueue }}
+  fifoQueue: true
+  {{- end }}
+  forProvider:
+    region: {{ $.Values.region }}
+    {{- if .forProvider }}
+    {{- toYaml .forProvider | nindent 4 }}
+    {{- end }}
+  writeConnectionSecretToRef:
+    namespace: {{ $.Release.Namespace }}
+    name: {{ $.Values.environment }}-{{ $.Values.apiName }}-sqs-{{ .name }}
+---
+{{- end }}

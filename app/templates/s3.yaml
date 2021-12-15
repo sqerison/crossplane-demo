@@ -1,0 +1,35 @@
+{{- range .Values.s3 }}
+apiVersion: s3.aws.crossplane.io/v1beta1
+kind: Bucket
+metadata:
+  name: {{ $.Values.environment }}-{{ $.Values.apiName }}-{{ .name }}
+spec:
+  deletionPolicy: {{ default "Delete" .deletionPolicy }}
+  forProvider:
+    locationConstraint: {{ $.Values.region }}
+    acl: private
+    {{- if .forProvider }}
+    {{- toYaml .forProvider | nindent 4 }}
+    {{- end }}
+  writeConnectionSecretToRef:
+    namespace: {{ $.Release.Namespace }}
+    name: {{ $.Values.environment }}-{{ $.Values.apiName }}-bucket-{{ .name }}
+---
+apiVersion: s3.aws.crossplane.io/v1alpha3
+kind: BucketPolicy
+metadata:
+  name: {{ $.Values.environment }}-{{ $.Values.apiName }}-{{ .name }}
+spec:
+  deletionPolicy: {{ default "Delete" .deletionPolicy }}
+  forProvider:
+    region: {{ $.Values.region }}
+    bucketName: {{ $.Values.environment }}-{{ $.Values.apiName }}-{{ .name }}
+    # TBD: rawPolicy:
+    {{- if .forProvider }}
+    {{- toYaml .forProvider | nindent 4 }}
+    {{- end }}
+  writeConnectionSecretToRef:
+    namespace: {{ $.Release.Namespace }}
+    name: {{ $.Values.environment }}-{{ $.Values.apiName }}-bucketpolicy-{{ .name }}
+---
+{{- end }}
