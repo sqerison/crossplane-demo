@@ -34,7 +34,8 @@ spec:
     engine: {{ default "postgres" .engine }}
     engineVersion: {{ default 12.7 .engineVersion | quote }}
     skipFinalSnapshotBeforeDeletion: {{ default true .skipFinalSnapshotBeforeDeletion }}
-    vpcSecurityGroupIds: {{ include "cricutCrossplane.securityGroupIds" $ }}
+    vpcSecurityGroupIds:
+      - subnet-d0d3609a
     {{- if .masterPasswordSecretRef }}
     masterPasswordSecretRef:
       namespace: {{ $.Release.Namespace }}
@@ -47,9 +48,5 @@ spec:
   writeConnectionSecretToRef:
     namespace: {{ $.Release.Namespace }}
     name: {{ $.Values.environment }}-{{ $.Values.apiName }}-rds-{{ .name }}
-  providerRef:
-    name: {{ $.Values.providerRef }}
-  providerConfigRef:
-    name: {{ $.Values.providerConfigRef }}
 ---
 {{- end }}
