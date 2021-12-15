@@ -23,7 +23,7 @@ sns: []
 s3:
   ### Reference: https://doc.crds.dev/github.com/crossplane/provider-aws/s3.aws.crossplane.io/Bucket/v1beta1@v0.21.0
   # - name: cache
-  # - name: foo
+  - name: foo
   # - name: bar
 
 rds:
