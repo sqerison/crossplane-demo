@@ -18,3 +18,16 @@ spec:
           image: nginx:1.14.2
           ports:
             - containerPort: 80
+          env:
+            {{- if .Values.rds }}
+              {{- range .Values.rds }}
+              {{- $name := .name -}}
+              {{- range $key, $value := .envVarMapping }}
+              - name: {{ $value }}
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ $.Values.environment }}-{{ $.Values.apiName }}-rds-{{ $name }}
+                    key: {{ $key }}
+              {{- end }}
+              {{- end }}
+              {{- end }}
