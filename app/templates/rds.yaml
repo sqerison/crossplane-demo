@@ -1,0 +1,55 @@
+{{- range .Values.rds }}
+apiVersion: database.aws.crossplane.io/v1beta1
+kind: DBSubnetGroup
+metadata:
+  name: {{ $.Values.environment }}-{{ $.Values.apiName }}-{{ .name }}-subg
+spec:
+  deletionPolicy: {{ default "Delete" .deletionPolicy }}
+  forProvider:
+    region: {{ $.Values.region }}
+    description: {{ $.Values.environment }} {{ $.Values.apiName }}-{{ .name }} {{ default "postgres" .engine }} Server Subnet Group
+    {{- include "cricutCrossplane.confidentialSubnets" $ | nindent 4 }}
+  writeConnectionSecretToRef:
+    namespace: {{ $.Release.Namespace }}
+    name: {{ $.Values.environment }}-{{ $.Values.apiName }}-subnetgroup-{{ .name }}
+  providerRef:
+    name: {{ $.Values.providerRef }}
+  providerConfigRef:
+    name: {{ $.Values.providerConfigRef }}
+---
+apiVersion: database.aws.crossplane.io/v1beta1
+kind: RDSInstance
+metadata:
+  name: {{ $.Values.environment }}-{{ $.Values.apiName }}-{{ .name }}
+spec:
+  deletionPolicy: {{ default "Delete" .deletionPolicy }}
+  forProvider:
+    region: {{ $.Values.region }}
+    dbSubnetGroupName: {{ $.Values.environment }}-{{ $.Values.apiName }}-{{ .name }}-subg
+    publiclyAccessible: false
+    multiAZ: {{ default false .multiAZ }}
+    dbInstanceClass: {{ default "db.t2.small" .dbInstanceClass }}
+    masterUsername: {{ default "postgres" .masterUsername }}
+    allocatedStorage: {{ default 20 .allocatedStorage }}
+    engine: {{ default "postgres" .engine }}
+    engineVersion: {{ default 12.7 .engineVersion | quote }}
+    skipFinalSnapshotBeforeDeletion: {{ default true .skipFinalSnapshotBeforeDeletion }}
+    vpcSecurityGroupIds: {{ include "cricutCrossplane.securityGroupIds" $ }}
+    {{- if .masterPasswordSecretRef }}
+    masterPasswordSecretRef:
+      namespace: {{ $.Release.Namespace }}
+      name: {{ default "mysql-pass" .masterPasswordSecretRef.name }}
+      key: {{ default "secretValue" .masterPasswordSecretRef.key }}
+    {{- end }}
+    {{- if .forProvider }}
+    {{- toYaml .forProvider | nindent 4 }}
+    {{- end }}
+  writeConnectionSecretToRef:
+    namespace: {{ $.Release.Namespace }}
+    name: {{ $.Values.environment }}-{{ $.Values.apiName }}-rds-{{ .name }}
+  providerRef:
+    name: {{ $.Values.providerRef }}
+  providerConfigRef:
+    name: {{ $.Values.providerConfigRef }}
+---
+{{- end }}

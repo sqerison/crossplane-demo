@@ -25,3 +25,8 @@ s3:
   # - name: cache
   - name: foo
   # - name: bar
+
+rds: []
+  ### Reference: https://doc.crds.dev/github.com/crossplane/provider-aws/cache.aws.crossplane.io/CacheCluster/v1alpha1@v0.21.0
+  # - name: foo
+  # - name: aurora-serverless
