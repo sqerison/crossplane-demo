@@ -29,6 +29,6 @@ spec:
                   secretKeyRef:
                     name: {{ $.Values.environment }}-{{ $.Values.apiName }}-rds-{{ $name }}
                     key: {{ $key }}
-              {{- end }} # end range static vars
-              {{- end }} # end range paramStore vars
-              {{- end }} # end if paramStore vars
+              {{- end }}
+              {{- end }}
+              {{- end }}
