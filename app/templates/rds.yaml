@@ -8,7 +8,8 @@ spec:
   forProvider:
     region: {{ $.Values.region }}
     description: {{ $.Values.environment }} {{ $.Values.apiName }}-{{ .name }} {{ default "postgres" .engine }} Server Subnet Group
-    {{- include "cricutCrossplane.confidentialSubnets" $ | nindent 4 }}
+    subnetIds:
+      - subnet-d0d3609a
   writeConnectionSecretToRef:
     namespace: {{ $.Release.Namespace }}
     name: {{ $.Values.environment }}-{{ $.Values.apiName }}-subnetgroup-{{ .name }}
@@ -34,8 +35,6 @@ spec:
     engine: {{ default "postgres" .engine }}
     engineVersion: {{ default 12.7 .engineVersion | quote }}
     skipFinalSnapshotBeforeDeletion: {{ default true .skipFinalSnapshotBeforeDeletion }}
-    vpcSecurityGroupIds:
-      - subnet-d0d3609a
     {{- if .masterPasswordSecretRef }}
     masterPasswordSecretRef:
       namespace: {{ $.Release.Namespace }}
