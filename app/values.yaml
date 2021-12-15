@@ -23,10 +23,15 @@ sns: []
 s3:
   ### Reference: https://doc.crds.dev/github.com/crossplane/provider-aws/s3.aws.crossplane.io/Bucket/v1beta1@v0.21.0
   # - name: cache
-  - name: foo
+  # - name: foo
   # - name: bar
 
-rds: []
+rds:
   ### Reference: https://doc.crds.dev/github.com/crossplane/provider-aws/cache.aws.crossplane.io/CacheCluster/v1alpha1@v0.21.0
-  # - name: foo
+   - name: foo
+     envVarMapping:
+       endpoint: POSTGRES_ENDPOINT
+       password: POSTGRES_PASSWORD
+       username: POSTGRES_USERNAME
+       port: POSTGRES_PORT
   # - name: aurora-serverless
