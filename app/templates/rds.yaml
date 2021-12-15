@@ -13,10 +13,6 @@ spec:
   writeConnectionSecretToRef:
     namespace: {{ $.Release.Namespace }}
     name: {{ $.Values.environment }}-{{ $.Values.apiName }}-subnetgroup-{{ .name }}
-  providerRef:
-    name: {{ $.Values.providerRef }}
-  providerConfigRef:
-    name: {{ $.Values.providerConfigRef }}
 ---
 apiVersion: database.aws.crossplane.io/v1beta1
 kind: RDSInstance
